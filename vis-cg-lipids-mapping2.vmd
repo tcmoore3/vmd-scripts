@@ -1,0 +1,65 @@
+# this is a good script for making pretty pictures of the "mapping-v2" of the CG lipid
+# models.
+#
+# Usage:
+    # vmd -e vis.vmd topology.xml trajectory.dcd
+mol new start.xml type hoomd first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all
+mol addfile query.dcd type dcd first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all
+proc vmdrestoremymaterials {} {
+  set mlist { Opaque Transparent BrushedMetal Diffuse Ghost Glass1 Glass2 Glass3 Glossy HardPlastic MetallicPastel Steel Translucent Edgy EdgyShiny EdgyGlass Goodsell AOShiny AOChalky AOEdgy BlownGlass GlassBubble }
+  set mymlist [material list]
+  foreach mat $mlist {
+    if { [lsearch $mymlist $mat] == -1 } { 
+      material add $mat
+    }
+  }
+  material change ambient AOEdgy 0.110000
+  material change diffuse AOEdgy 1.000000
+  material change specular AOEdgy 0.040000
+  material change shininess AOEdgy 0.000000
+  material change opacity AOEdgy 1.000000
+  material change outline AOEdgy 2.980000
+  material change outlinewidth AOEdgy 0.540000
+  material change transmode AOEdgy 0.000000
+}
+vmdrestoremymaterials
+proc my_set_def_vdw{args} {
+ lassign $args fname molid
+ set my_def_vdw {
+  {name amide} {1.0} \
+  {name mhead2} {1.0} \
+  {name stick1} {1.0} \
+  {name stick2} {1.0} \
+  {name tail} {1.0} \
+ }
+ foreach {selstr rad} $my_def_vdw {
+  set my_sel [atomselect $molid "$selstr"]
+  $my_sel set radius $rad
+  $my_sel delete
+ }
+}
+trace variable vmd_initialize_structure(0) w my_set_def_vdw
+trace variable vmd_initialize_structure(1) w my_set_def_vdw
+trace variable vmd_initialize_structure(2) w my_set_def_vdw
+mol delrep 0 top
+mol representation DynamicBonds 0.600000 0.100000 10.000000
+mol color ColorID 6
+mol selection {all}
+mol material AOEdgy
+mol addrep top
+mol representation CPK 0.600000 0.000000 10.000000 10.000000
+mol color ColorID 17
+mol selection {name amide mhead2}
+mol material AOEdgy
+mol addrep top
+mol representation CPK 0.300000 0.000000 10.000000 10.000000
+mol color ColorID 30
+mol selection {name stick1 stick2}
+mol material AOEdgy
+mol addrep top
+mol representation CPK 0.200000 0.000000 10.000000 10.000000
+mol color ColorID 6
+mol selection {all}
+mol material AOEdgy
+mol addrep top
+
