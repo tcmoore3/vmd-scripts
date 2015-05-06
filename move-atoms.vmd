@@ -1,0 +1,25 @@
+# move center of geometry of atoms in selection to the origin
+
+# add hoomdxml file
+mol new emin-vmd.xml type hoomd autobonds off waitfor all
+
+# show box
+pbc box -center origin
+
+# make selection named sel containing all atoms
+set sel [atomselect top "all"]
+
+# function to calculate geometric center of a selection
+proc geom_center {selection} {
+    set gc [veczero]
+    foreach coord [$selection get {x y z}] {
+        set gc [vecadd $gc $coord]
+    }
+    return [vecscale [expr 1.0/[$selection num]] $gc]
+}
+
+# calc geometric center of sel
+set gc [geom_center $sel]; 
+
+# move all atoms in cel by the negative geometric center
+$sel moveby [vecinvert $gc]
