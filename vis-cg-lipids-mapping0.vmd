@@ -1,0 +1,78 @@
+# this is a good script for making pretty pictures of the "original mapping" of the CG lipid
+# models.
+#
+# Usage:
+    # vmd -e <this_script>
+
+mol new ../start.xml type hoomd autobonds off waitfor all
+mol addfile cgcer2.dcd type dcd autobonds off waitfor all
+
+# alter materials
+proc vmdrestoremymaterials {} {
+  set mlist { Opaque Transparent BrushedMetal Diffuse Ghost Glass1 Glass2 Glass3 Glossy HardPlastic MetallicPastel Steel Translucent Edgy EdgyShiny EdgyGlass Goodsell AOShiny AOChalky AOEdgy BlownGlass GlassBubble }
+  set mymlist [material list]
+  foreach mat $mlist {
+    if { [lsearch $mymlist $mat] == -1 } { 
+      material add $mat
+    }
+  }
+  material change ambient AOEdgy 0.110000
+  material change diffuse AOEdgy 1.000000
+  material change specular AOEdgy 0.040000
+  material change shininess AOEdgy 0.000000
+  material change opacity AOEdgy 1.000000
+  material change outline AOEdgy 2.980000
+  material change outlinewidth AOEdgy 0.540000
+  material change transmode AOEdgy 0.000000
+}
+vmdrestoremymaterials
+proc my_set_def_vdw{args} {
+ lassign $args fname molid
+ set my_def_vdw {
+  {name amide} {1.0} \
+  {name mhead2} {1.0} \
+  {name stick1} {1.0} \
+  {name stick2} {1.0} \
+  {name tail} {1.0} \
+ }
+ foreach {selstr rad} $my_def_vdw {
+  set my_sel [atomselect $molid "$selstr"]
+  $my_sel set radius $rad
+  $my_sel delete
+ }
+}
+trace variable vmd_initialize_structure(0) w my_set_def_vdw
+trace variable vmd_initialize_structure(1) w my_set_def_vdw
+trace variable vmd_initialize_structure(2) w my_set_def_vdw
+
+# start with a clean palette 
+mol delrep 0 top
+
+# licorice for all (ends up being the tails)
+#mol rep Licorice 0.15 10.0 10.0
+mol representation DynamicBonds 0.600000 0.100000 10.000000
+mol color ColorID 6
+mol selection {all}
+mol material AOEdgy
+mol addrep top
+mol modstyle 0 0 Licorice 0.15 10.0 10.0
+
+# yellow head beads
+mol representation CPK 0.600000 0.000000 10.000000 10.000000
+mol color ColorID 17
+mol selection {name nhead mhead shead}
+mol material AOEdgy
+mol addrep top
+
+# small spheres so dynamic bonds have rounded ends
+mol representation CPK 0.200000 0.000000 10.000000 10.000000
+mol color ColorID 6
+mol selection {all}
+mol material AOEdgy
+mol addrep top
+
+#pbc  join connected
+
+# better lighting for rendering
+light 3 on
+light 3 pos {-0.117763 0.359786 1.362603}
