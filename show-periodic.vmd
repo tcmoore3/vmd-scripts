@@ -1,0 +1,11 @@
+# requires struct::list to make sequence of integers
+package require struct::list
+
+# get number of reps and make a sequence out of it
+set n [struct::list iota [molinfo 0 get {numreps}]]
+
+# turn on periodic images
+foreach i $n {
+    mol showperiodic 0 $i xXyY
+    mol numperiodic 0 $i 1
+}
