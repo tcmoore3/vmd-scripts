@@ -4,8 +4,9 @@
 # Usage:
     # vmd -e <this_script>
 
-mol new ../start.xml type hoomd autobonds off waitfor all
-mol addfile cgcer2.dcd type dcd autobonds off waitfor all
+mol new start.xml type hoomd autobonds off waitfor all
+mol addfile query_un.dcd type dcd autobonds off waitfor all
+
 proc vmdrestoremymaterials {} {
   set mlist { Opaque Transparent BrushedMetal Diffuse Ghost Glass1 Glass2 Glass3 Glossy HardPlastic MetallicPastel Steel Translucent Edgy EdgyShiny EdgyGlass Goodsell AOShiny AOChalky AOEdgy BlownGlass GlassBubble }
   set mymlist [material list]
@@ -24,24 +25,6 @@ proc vmdrestoremymaterials {} {
   material change transmode AOEdgy 0.000000
 }
 vmdrestoremymaterials
-proc my_set_def_vdw{args} {
- lassign $args fname molid
- set my_def_vdw {
-  {name amide} {1.0} \
-  {name mhead2} {1.0} \
-  {name stick1} {1.0} \
-  {name stick2} {1.0} \
-  {name tail} {1.0} \
- }
- foreach {selstr rad} $my_def_vdw {
-  set my_sel [atomselect $molid "$selstr"]
-  $my_sel set radius $rad
-  $my_sel delete
- }
-}
-trace variable vmd_initialize_structure(0) w my_set_def_vdw
-trace variable vmd_initialize_structure(1) w my_set_def_vdw
-trace variable vmd_initialize_structure(2) w my_set_def_vdw
 
 # start with a clean palette 
 mol delrep 0 top
@@ -53,7 +36,7 @@ mol color ColorID 6
 mol selection {all}
 mol material AOEdgy
 mol addrep top
-mol modstyle 0 0 Licorice 0.15 10.0 10.0
+#mol modstyle 0 0 Licorice 0.15 10.0 10.0
 
 # yellow head beads
 mol representation CPK 0.600000 0.000000 10.000000 10.000000
@@ -81,3 +64,4 @@ mol addrep top
 # better lighting for rendering
 light 3 on
 light 3 pos {-0.117763 0.359786 1.362603}
+axes location off
