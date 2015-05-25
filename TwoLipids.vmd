@@ -1,0 +1,113 @@
+topo readlammpsdata bilayer.lammpsdata
+
+display resize 900 500
+display ambientocclusion on
+display aoambient 0.75
+display aodirect 0.75
+
+material add Transparent2
+material change ambient Transparent2 0.0
+material change specular Transparent2 0.7
+material change diffuse Transparent2 0.7
+material change shininess Transparent2 0.15
+material change opacity Transparent2 0.2
+
+set sel [atomselect top {type 1 2 3 4 5}] 
+$sel set name O 
+$sel delete 
+
+set sel [atomselect top {type 21}] 
+$sel set name H 
+$sel delete 
+
+set sel [atomselect top {type 57}] 
+$sel set name OW 
+$sel delete 
+
+set sel [atomselect top {type 58}] 
+$sel set name HW 
+$sel delete 
+
+set numDXPC 100
+set numLip 200
+set singlelip1 20
+set singlelip2 170
+
+mol addfile trajectory.lammps type lammpstrj first 0 last 200 autobonds off waitfor all
+
+rotate y by 90 
+rotate x by 90
+pbc wrap -compound fragment -center origin -all
+pbc box -center origin -width 2 -color black
+
+mol delrep 0 0
+set rep 0
+
+
+mol addrep 0
+mol modselect ${rep} 0 "residue $singlelip1"
+mol modstyle ${rep} 0 Licorice 0.4 20.0
+mol modmaterial ${rep} 0 AOChalky
+mol modcolor ${rep} 0 ColorID 3
+
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "residue $singlelip1 and type 8"
+mol modstyle ${rep} 0 VDW 0.4 24.0
+mol modmaterial ${rep} 0 AOChalky
+mol modcolor ${rep} 0 ColorID 4
+
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "residue $singlelip1 and type 30"
+mol modstyle ${rep} 0 VDW 0.4 24.0
+mol modmaterial ${rep} 0 AOChalky
+mol modcolor ${rep} 0 ColorID 0
+
+
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "residue $singlelip2"
+mol modstyle ${rep} 0 Licorice 0.4 20.0
+mol modmaterial ${rep} 0 AOChalky
+#mol modcolor ${rep} 0 ColorID 4
+
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "residue $singlelip2 and name O H"
+mol modstyle ${rep} 0 VDW 0.4 20.0
+mol modmaterial ${rep} 0 AOChalky
+
+#water
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 {name OW HW}
+mol modstyle ${rep} 0 CPK 0.4 0.4 14.0 14.0
+mol modmaterial ${rep} 0 Transparent2
+
+# nearby water
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "same residue as (residue > $numLip and within 5 of (residue $singlelip1 $singlelip2))" 
+mol modstyle ${rep} 0 CPK 1.2 1.2 20.0 20
+mol modmaterial ${rep} 0 AOChalky
+mol selupdate ${rep} top on
+
+# nearby phospholipids
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "same residue as (residue < $numDXPC and not residue $singlelip1 $singlelip2 and within 10 of (residue $singlelip1 $singlelip2 and type 30 21))"
+mol modstyle ${rep} 0 Licorice 0.4 16.0
+mol modmaterial ${rep} 0 Transparent2
+mol modcolor ${rep} 0 ColorID 3
+mol selupdate ${rep} top on
+
+# other nearby lipids
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "same residue as (residue >= $numDXPC and residue < $numLip and not residue $singlelip1 $singlelip2 and within 10 of (residue $singlelip1 $singlelip2 and type 30 21))"
+mol modstyle ${rep} 0 Licorice 0.4 16.0
+mol modmaterial ${rep} 0 Transparent2
+mol selupdate ${rep} top on
+
+scale to 0.04
