@@ -1,0 +1,167 @@
+topo readlammpsdata bilayer.lammpsdata
+topo guessatom lammps data
+# guessatom property from..
+
+display resize 900 500
+display ambientocclusion on
+display aoambient 0.75
+display aodirect 0.75
+#display backgroundcolor black
+
+material add Transparent2
+material change ambient Transparent2 0.0
+material change specular Transparent2 0.7
+material change diffuse Transparent2 0.7
+material change shininess Transparent2 0.15
+material change opacity Transparent2 0.2
+
+set sel [atomselect top {type 1 2 3 4 5}] 
+$sel set name O 
+$sel set element O
+$sel delete 
+
+set sel [atomselect top {type 21}] 
+$sel set name H 
+$sel set element H
+$sel delete 
+
+set sel [atomselect top {type 57}] 
+$sel set name O 
+$sel set element O
+$sel delete 
+
+set sel [atomselect top {type 58}] 
+$sel set name H 
+$sel set element H
+$sel delete 
+
+mol reanalyze 0
+
+set numDXPC 100
+set numLip 200
+set singlelip1 11
+set singlelip2 170
+
+mol addfile trajectory.lammps type lammpstrj first 0 last 200 autobonds off waitfor all
+
+rotate y by 90 
+rotate x by 90
+pbc wrap -compound fragment -center origin -all
+#pbc box -center origin -width 2 -color black
+
+mol delrep 0 0
+set rep 0
+
+
+mol addrep 0
+mol modselect ${rep} 0 "residue $singlelip1"
+mol modstyle ${rep} 0 Licorice 0.4 20.0
+mol modmaterial ${rep} 0 AOChalky
+mol modcolor ${rep} 0 ColorID 3
+
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "residue $singlelip1 and type 8"
+mol modstyle ${rep} 0 VDW 0.4 24.0
+mol modmaterial ${rep} 0 AOChalky
+mol modcolor ${rep} 0 ColorID 4
+
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "residue $singlelip1 and name O"
+mol modstyle ${rep} 0 VDW 0.4 24.0
+mol modmaterial ${rep} 0 AOChalky
+
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "residue $singlelip1 and type 30"
+mol modstyle ${rep} 0 VDW 0.4 24.0
+mol modmaterial ${rep} 0 AOChalky
+mol modcolor ${rep} 0 ColorID 0
+
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "same residue as (residue > $numLip and within 5.5 of (residue $singlelip1))" 
+mol modstyle ${rep} 0 Quicksurf 0.8 1.0 0.6 1.0
+mol modmaterial ${rep} 0 Transparent2
+mol modcolor ${rep} 0 ColorID 0
+mol selupdate ${rep} top on
+
+# nearby water
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "same residue as (residue > $numLip and within 5 of (residue $singlelip1))" 
+mol modstyle ${rep} 0 CPK 0.5 0.5 20.0 20
+mol modmaterial ${rep} 0 AOChalky
+mol selupdate ${rep} top on
+
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "same residue as (residue $singlelip1 or (residue > $numLip and within 5 of (residue $singlelip1)))" 
+mol modstyle ${rep} 0 HBonds 3.5 30.0 2.0
+mol modcolor ${rep} 0 ColorID 16
+mol selupdate ${rep} top on
+
+# nearby phospholipids
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "abs(z)<16 and abs(z)>5 and residue < $numDXPC/2 and not residue $singlelip1 and (same residue as within 5.5 of (residue $singlelip1 and abs(z)<16 and abs(z)>5)) and within 7 of residue $singlelip1"
+mol modstyle ${rep} 0 Licorice 0.3 16.0
+mol modmaterial ${rep} 0 AOEdgy
+mol modcolor ${rep} 0 ColorID 1
+mol selupdate ${rep} top on
+
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "abs(z)<16 and abs(z)>5 and residue >= $numDXPC and residue < $numDXPC+($numLip-$numDXPC)/2 and not residue $singlelip1 and (same residue as (abs(z)<16 and abs(z)>5 and within 5.5 of residue $singlelip1)) and within 7 of residue $singlelip1"
+mol modstyle ${rep} 0 Licorice 0.3 16.0
+mol modmaterial ${rep} 0 AOEdgy
+mol modcolor ${rep} 0 ColorID 0
+mol selupdate ${rep} top on
+
+# A selection containing neighboring tails of both species
+#mol addrep 0
+#incr rep
+#mol modselect ${rep} 0 "abs(z)<16 and abs(z)>5 and ((residue >= $numDXPC and residue < $numDXPC+($numLip-$numDXPC)/2) or (residue < $numDXPC/2)) and not residue $singlelip1 and (same residue as (abs(z)<16 and abs(z)>5 and within 5.5 of residue $singlelip1)) and within 7 of residue $singlelip1"
+#mol modstyle ${rep} 0 Licorice 0.7 16.0
+#mol modmaterial ${rep} 0 AOEdgy
+#mol modcolor ${rep} 0 ColorID 2
+#mol selupdate ${rep} top on
+
+
+# A selection containing neighboring tails of both species
+set sel [atomselect top "abs(z)<16 and abs(z)>5 and ((residue >= $numDXPC and residue < $numDXPC+($numLip-$numDXPC)/2) or (residue < $numDXPC/2)) and not residue $singlelip1 and (same residue as (abs(z)<16 and abs(z)>5 and within 5.5 of residue $singlelip1)) and within 7 of residue $singlelip1"] 
+$sel set name dummy 
+
+# remaining issue is that I don't have the min or max z values, due to weird sorting without -real flag
+# furthermore, ideally I would interpolate between the xy positions of the atoms in testlist, 
+#   and the atoms with an index one higher or lower. The hexagon will then be in a flat plane
+# I can easily calculate the coordinates, may need to define atoms at these locations to apply dynamic bonds.
+
+#set unsortlist2 [lsort -real [$sel get {z index}]]
+set unsortlist2 [lsort [$sel get {z index}]]
+set skipped 0
+for {set i 0} {$i < 8} {incr i} {
+   set thisid [lindex [lindex $unsortlist2 $i+$skipped] 1]
+   if {$i>0} {
+      set inlist [lsearch $testlist [expr {$thisid-1}]]
+      if {$inlist>=0} {
+         incr skipped
+         set thisid [lindex [lindex $unsortlist2 $i+$skipped] 1]
+     }
+   }
+   lappend testlist $thisid
+}
+puts $testlist
+
+$sel delete 
+
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 "index $testlist" 
+mol modstyle ${rep} 0 DynamicBonds 6.9 0.10 20.0
+mol modcolor ${rep} 0 ColorID 16
+mol selupdate ${rep} top on
+
+
+scale to 0.04
