@@ -1,8 +1,8 @@
 topo readlammpsdata lowest_t1554000_T305.0_PE-20512.304.lammpsdata
+topo guessatom lammps data
 mol addfile traj.lammpstrj autobonds off waitfor all
 
 mol delrep 0 0
-
 
 mol addrep top
 mol modselect 0 0 "not name 1 2 9 10 11"
@@ -22,32 +22,13 @@ display ambientocclusion on
 pbc wrap -center origin -all -compound residue
 
 # alter materials
-proc vmdrestoremymaterials {} {
-  set mlist { Opaque Transparent BrushedMetal Diffuse Ghost Glass1 Glass2 Glass3 Glossy HardPlastic MetallicPastel Steel Translucent Edgy EdgyShiny EdgyGlass Goodsell AOShiny AOChalky AOEdgy BlownGlass GlassBubble }
-  set mymlist [material list]
-  foreach mat $mlist {
-    if { [lsearch $mymlist $mat] == -1 } { 
-      material add $mat
-    }
-  }
-  material change ambient AOEdgy 0.110000
-  material change diffuse AOEdgy 1.000000
-  material change specular AOEdgy 0.040000
-  material change shininess AOEdgy 0.000000
-  material change opacity AOEdgy 1.000000
-  material change outline AOEdgy 2.980000
-  material change outlinewidth AOEdgy 0.540000
-  material change transmode AOEdgy 0.000000
-}
-vmdrestoremymaterials
+material change ambient AOEdgy 0.110000
+material change diffuse AOEdgy 1.000000
+material change specular AOEdgy 0.040000
+material change shininess AOEdgy 0.000000
+material change opacity AOEdgy 1.000000
+material change outline AOEdgy 2.980000
+material change outlinewidth AOEdgy 0.540000
+material change transmode AOEdgy 0.000000
 
-# change elements for CPK coloring
-set sel [atomselect top "name 1 13 14 18 20"]
-$sel set element O
-set sel [atomselect top "name 2 7 8 9 10 11 16 19"]
-$sel set element H
-set sel [atomselect top "name 3 4 5 6 15 17"]
-$sel set element C
-set sel [atomselect top "name 12"]
-$sel set element N
-color Element C silver
+mol reanalyze 0
