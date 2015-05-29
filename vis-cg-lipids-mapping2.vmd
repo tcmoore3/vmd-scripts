@@ -7,24 +7,14 @@
 mol new start.xml type hoomd autobonds off waitfor all
 mol addfile query_un.dcd type dcd autobonds off waitfor all
 
-proc vmdrestoremymaterials {} {
-  set mlist { Opaque Transparent BrushedMetal Diffuse Ghost Glass1 Glass2 Glass3 Glossy HardPlastic MetallicPastel Steel Translucent Edgy EdgyShiny EdgyGlass Goodsell AOShiny AOChalky AOEdgy BlownGlass GlassBubble }
-  set mymlist [material list]
-  foreach mat $mlist {
-    if { [lsearch $mymlist $mat] == -1 } { 
-      material add $mat
-    }
-  }
-  material change ambient AOEdgy 0.110000
-  material change diffuse AOEdgy 1.000000
-  material change specular AOEdgy 0.040000
-  material change shininess AOEdgy 0.000000
-  material change opacity AOEdgy 1.000000
-  material change outline AOEdgy 2.980000
-  material change outlinewidth AOEdgy 0.540000
-  material change transmode AOEdgy 0.000000
-}
-vmdrestoremymaterials
+material change ambient AOEdgy 0.110000
+material change diffuse AOEdgy 1.000000
+material change specular AOEdgy 0.040000
+material change shininess AOEdgy 0.000000
+material change opacity AOEdgy 1.000000
+material change outline AOEdgy 2.980000
+material change outlinewidth AOEdgy 0.540000
+material change transmode AOEdgy 0.000000
 
 # start with a clean palette 
 mol delrep 0 top
