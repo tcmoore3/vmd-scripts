@@ -1,17 +1,17 @@
-topo readlammpsdata lowest_t1554000_T305.0_PE-20512.304.lammpsdata
+topo readlammpsdata system.lammpsdata
 topo guessatom lammps data
 mol addfile traj.lammpstrj autobonds off waitfor all
 
 mol delrep 0 0
 
 mol addrep top
-mol modselect 0 0 "not name 1 2 9 10 11"
+mol modselect 0 0 "not type 1 2 9 10 11"
 mol modstyle 0 0 CPK
 mol modmaterial 0 0 AOEdgy
 mol modcolor 0 0 Element
 
 mol addrep top
-mol modselect 1 0 "name 1 2"
+mol modselect 1 0 "type 1 2"
 mol modstyle 1 0 CPK
 mol modmaterial 1 0 AOEdgy
 mol modcolor 1 0 Element
