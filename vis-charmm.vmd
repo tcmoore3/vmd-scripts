@@ -1,5 +1,6 @@
 topo readlammpsdata system.lammpsdata
 topo guessatom lammps data
+mol reanalyze 0
 mol addfile traj.lammpstrj autobonds off waitfor all
 
 mol delrep 0 0
@@ -31,4 +32,3 @@ material change outline AOEdgy 2.980000
 material change outlinewidth AOEdgy 0.540000
 material change transmode AOEdgy 0.000000
 
-mol reanalyze 0
