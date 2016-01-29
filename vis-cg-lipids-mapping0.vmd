@@ -8,7 +8,7 @@ mol new start.hoomdxml type hoomd autobonds off waitfor all
 mol addfile all.dcd type dcd autobonds off waitfor all
 
 set non_waters "ter2 tail head nhead mhead shead chead ring ctail cterm chme"
-set head_beads "head chead amide mhead2"
+set head_beads "head chead shead nhead mhead"
 
 material change ambient AOEdgy 0.110000
 material change diffuse AOEdgy 1.000000
