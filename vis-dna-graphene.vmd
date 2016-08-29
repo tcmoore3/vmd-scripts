@@ -17,7 +17,7 @@ material change outlinewidth AOEdgy 0.540000
 material change transmode AOEdgy 0.000000
 
 # get rid of ugly cyan color for carbon
-color Element C gray
+color Name C gray
 
 menu graphics off
 menu graphics on
