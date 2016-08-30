@@ -1,0 +1,27 @@
+to remove the old movie, run the vmd script and make a new movie, execute:
+rm movie.mpeg; vmd -e vis.vmd; ffmpeg -f image2 -i frame.%4d.tga movie.mpeg; open movie.mpeg
+
+Slightly better quality movies (if file size isn't an issue):
+
+ffmpeg -f image2 -i image.%4d.tga -qscale 1 -b 9600 movie.mp4
+rm movie.mpeg; vmd -e vis2.vmd; ffmpeg -f image2 -i frame.%4d.tga -qscale 1 -b 19200 movie.mpeg; open movie.mpeg
+
+Speeding up/slowing down a movie
+
+Often times, you may be unhappy with the speed of the movie. You can adjust the speed using ffmpeg,
+
+ffmpeg -i movie.mp4 -qscale 1 -b 9600 -vf "setpts=(1/<speed>)*PTS" output.mp4
+rm movie.mpeg; vmd -e vis2.vmd; ffmpeg -f image2 -i frame.%4d.tga -qscale 1 -b 9600 -vf "setpts=(1/12)*PTS" output.mp4  movie.mpeg; open movie.mpeg
+
+
+Thins info is found on the Carbury wiki.
+where my username and password are remco
+
+cat addeddata >> olddata
+
+convert multiple extension with Convert_pngtga.py
+
+
+rm movie.mpeg; ffmpeg -f image2 -i frame.%4d.png -qscale 1 -b 14400 movie.mpeg; open movie.mpeg
+ffmpeg -r 20 -f image2 -i frame.%04d.png -f mp4 -q:v 0 -vcodec mpeg4 -r 20 myVideo.mp4
+vmd -e vis2.vmd; ffmpeg -r 25 -i frame.%4d.png -vb 40M myvideo.mpg

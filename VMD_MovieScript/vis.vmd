@@ -1,0 +1,88 @@
+
+mol new {ilgrap.dcd} type {dcd} first 100 last -1 step 1 waitfor all
+mol addfile {ilCnt.psf} type {psf} first 0 last -1 step 1 waitfor 1 all
+#mol addfile {step5_assembly.pdb} type {pdb} first 0 last -1 step 1 waitfor 1 0
+
+display resize 2000 300
+display ambientocclusion on
+display aoambient 0.75
+display aodirect 0.75
+
+material change opacity Transparent 0.15
+
+material add Transparent2
+material change ambient Transparent2 0.0
+material change specular Transparent2 0.7
+material change diffuse Transparent2 0.7
+material change shininess Transparent2 0.15
+material change opacity Transparent2 0.3
+
+set sel [atomselect top {resid <= 128 and type O12 O13 O14}]
+$sel set name O1
+$sel set element O
+$sel delete
+
+set sel [atomselect top {resid <= 128 and type O11 O21 O22 O31 O32}]
+$sel set name O1
+$sel set element O
+$sel delete
+
+mol reanalyze 0
+
+
+rotate y by 90
+
+mol delrep 0 0
+set rep 0
+
+mol addrep 0
+mol modselect ${rep} 0 {name C}
+mol modstyle ${rep} 0 DynamicBonds 1.6 0.05 16.0
+mol modmaterial ${rep} 0 AOChalky
+
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 {resname GLY}
+mol modstyle ${rep} 0 VDW 0.5 20.0
+mol modmaterial ${rep} 0 AOChalky
+mol modcolor ${rep} 0 ColorID 0
+
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 {resname GLY}
+mol modstyle ${rep} 0 DynamicBonds 1.2 0.4 16.0
+mol modmaterial ${rep} 0 AOChalky
+mol modcolor ${rep} 0 ColorID 0
+
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 {resname EMI}
+mol modstyle ${rep} 0 VDW 0.5 16.0
+mol modmaterial ${rep} 0 AOChalky
+mol modcolor ${rep} 0 ColorID 1
+
+mol addrep 0
+incr rep
+mol modselect ${rep} 0 {resname EMI}
+mol modstyle ${rep} 0 DynamicBonds 1.2 0.4 16.0
+mol modmaterial ${rep} 0 AOChalky
+mol modcolor ${rep} 0 ColorID 1
+
+
+#mol addrep 0
+#incr rep
+#mol modselect ${rep} 0 {water}
+#mol modstyle ${rep} 0 CPK 0.6 0.6 16.0 16.0
+#mol modmaterial ${rep} 0 Transparent2
+
+scale to 0.09
+
+set n [molinfo top get numframes]
+#set n 1000
+for {set i 1000} {$i < $n} {incr i} {
+   animate goto $i
+   set filename frame.[format "%04d" $i].tga
+   render TachyonInternal $filename;
+   #sleep 0.1
+}
+quit
