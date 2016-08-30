@@ -14,9 +14,6 @@ ffmpeg -i movie.mp4 -qscale 1 -b 9600 -vf "setpts=(1/<speed>)*PTS" output.mp4
 rm movie.mpeg; vmd -e vis2.vmd; ffmpeg -f image2 -i frame.%4d.tga -qscale 1 -b 9600 -vf "setpts=(1/12)*PTS" output.mp4  movie.mpeg; open movie.mpeg
 
 
-Thins info is found on the Carbury wiki.
-where my username and password are remco
-
 cat addeddata >> olddata
 
 convert multiple extension with Convert_pngtga.py
