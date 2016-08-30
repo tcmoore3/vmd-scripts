@@ -1,0 +1,9 @@
+set bf 0
+set ef [molinfo top get numframes]
+exec mkdir -p images
+for {set i $bf} {$i < $n} {incr i} {
+        animate goto $i
+        set filename images/[format "%04d" [expr $i - $bf]].tga
+        render snapshot $filename 
+}
+echo y | exec ffmpeg -f image2 -i images/%4d.tga movie.mpeg
