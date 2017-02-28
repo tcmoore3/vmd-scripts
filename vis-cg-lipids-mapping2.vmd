@@ -4,11 +4,9 @@
 # Usage:
     # vmd -e <this_script>
 
-mol new start.hoomdxml type hoomd autobonds off waitfor all
-mol addfile all.dcd type dcd autobonds off waitfor all
-
-set non_waters "ter2 tail head amide mhead2 stick1 stick2 chead ring ctail cterm chme"
-set head_beads "head chead amide mhead2"
+mol new start-stacked.hoomdxml type hoomd autobonds off waitfor all
+#mol addfile traj.dcd type dcd autobonds off waitfor all step 1
+#mol addfile traj.dcd type dcd first 0 last -1 step 5 autobonds off waitfor all
 
 material change ambient AOEdgy 0.110000
 material change diffuse AOEdgy 1.000000
@@ -24,31 +22,51 @@ mol delrep 0 top
 
 # licorice for all (ends up being the tails)
 #mol rep Licorice 0.15 10.0 10.0
-mol representation DynamicBonds 0.600000 0.100000 10.000000
+mol representation Licorice 0.11 10.0 10.0
 mol color ColorID 6
-mol selection {all not name "water"}
+mol selection "name tail ter2 head amide mhead2 oh1 oh2"
 mol material AOEdgy
 mol addrep top
-mol modstyle 0 0 Licorice 0.11 10.0 10.0
 
-# yellow head beads
+# tan chol bodies
+mol representation Licorice 0.11 10.0 10.0
+mol color ColorID 5
+mol selection "name chead ring ctail cterm chme"
+mol material AOEdgy
+mol addrep top
+
+# ffa head beads
+mol representation CPK 0.600000 0.000000 10.000000 10.000000
+mol color ColorID 11
+mol selection "name head"
+mol material AOEdgy
+mol addrep top
+
+# chol head beads
+mol representation CPK 0.600000 0.000000 10.000000 10.000000
+mol color ColorID 30
+mol selection "name chead"
+mol material AOEdgy
+mol addrep top
+
+# cer head beads
 mol representation CPK 0.600000 0.000000 10.000000 10.000000
 mol color ColorID 17
-mol selection name $head_beads
+mol selection "name amide mhead2"
 mol material AOEdgy
 mol addrep top
 
 # red sticky spots
 mol representation CPK 0.400000 0.000000 10.000000 10.000000
 mol color ColorID 30
-mol selection "name stick1 stick2 oh1 oh2"
+mol selection "name oh1 oh2"
 mol material AOEdgy
 mol addrep top
 
 # water
 mol representation CPK 0.5 0.0 10.0 10.0
 mol color ColorID 23
-mol selection {name "water"}
+mol selection "name 'water'"
 mol material AOEdgy
 mol addrep top
 
@@ -65,4 +83,6 @@ light 3 pos {0 0 1}
 light 3 off
 axes location off
 
+#animate delete beg 0 end 0
 pbc wrap -center origin -compound residue -all
+pbc box -center origin -color black
