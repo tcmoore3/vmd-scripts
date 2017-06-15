@@ -1,7 +1,7 @@
 # move center of geometry of atoms in selection to the origin
 
 # show box
-pbc box -center origin
+pbc box -center origin -color black
 # pbc box
 
 # make selection named sel containing all atoms
@@ -23,3 +23,4 @@ set gc [geom_center $sel];
 
 # move all atoms in cel by the negative geometric center
 $all moveby [vecinvert $gc]
+pbc wrap -center origin -compound residue
